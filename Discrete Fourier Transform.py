@@ -8,6 +8,10 @@ import numpy as np
 
 
 def DFT(input,K):
+    """
+    :param input: the input signal
+    :param K: the number of sampling points
+    """
 
     # DFT
     X = np.zeros(K)
