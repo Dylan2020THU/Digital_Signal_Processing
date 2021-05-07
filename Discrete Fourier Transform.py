@@ -24,6 +24,13 @@ def DFT(input, K, N):
 
 
 def draw_basis_funcions(start, end, K, N):
+    """
+
+    :param start: the start point of the basis functions
+    :param end: the end point of the basis functions
+    :param K: the number of basis signals
+    :param N: the number of sampling points
+    """
     samples = 100
     n = np.linspace(start, end, num=samples)
     basis = np.zeros((K, samples))
