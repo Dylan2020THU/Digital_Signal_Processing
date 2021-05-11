@@ -31,7 +31,7 @@ def DCT(input, K, N):
     return X
 
 
-def fit_curve(term_num):
+def fit_curve_DCT(term_num):
     # DCT
     # term_num = 6
     X_k = DCT(x_n, term_num, num)  # Calculate each X[k]
@@ -73,10 +73,10 @@ if __name__ == '__main__':
     L = num
     loss = np.zeros(L)
     for l in range(L):
-        loss[l] = fit_curve(l)
+        loss[l] = fit_curve_DCT(l)
 
     ax2 = fig.add_subplot(212)
-    ax2.plot(np.arange(L), loss)
+    ax2.plot(np.arange(L), loss, c='r')
 
     plt.legend()
     plt.show()
