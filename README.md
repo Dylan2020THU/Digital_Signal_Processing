@@ -1,2 +1,2 @@
 # Digital_Signal_Processing
-Some trials about DSP.
+Some experiments and corresponding results and on Digital Signal Processing.
