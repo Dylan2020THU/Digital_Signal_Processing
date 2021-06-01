@@ -14,7 +14,7 @@ def discrete_RT(img_mat, steps):
     N = img.shape[1]
     Rf = np.zeros((M, N))
     for s in range(steps):
-        rotation = ndimage.rotate(img_mat, -s * 180 / steps, reshape=False)  # Treat as the rotation of the image
+        rotation = ndimage.rotate(img_mat, -s * 180 / steps, reshape=False).astype('float64')  # Treat as the rotation of the image; 'float64' is used for incresing the accuracy
         Rf[:, s] = sum(rotation)  # linear integral on specific theta
     return Rf
 
