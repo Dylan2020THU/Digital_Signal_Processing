@@ -1,5 +1,5 @@
 # Radon Transform
-# 2021-5-31
+# 2021-5-30
 # TBSI, THU
 # Hengxi Zhang
 
@@ -9,24 +9,36 @@ import numpy as np
 from scipy import ndimage  # For the rotation of the pic
 
 
-def discrete_RT(img_mat, steps):
+def discrete_radon_trans(img, theta):
     M = img.shape[0]
     N = img.shape[1]
     Rf = np.zeros((M, N))
-    for s in range(steps):
-        rotation = ndimage.rotate(img_mat, -s * 180 / steps, reshape=False).astype('float64')  # Treat as the rotation of the image; 'float64' is used for incresing the accuracy
-        Rf[:, s] = sum(rotation)  # linear integral on specific theta
+    for s in range(theta):
+        rotation = ndimage.rotate(img, -s * 180 / theta, reshape=False).astype('float64')
+        '''     
+        The linear integral is treated as the rotation of the image;
+        'float64' is used for increasing the accuracy;
+        The default rotation is anticlockwise, and we need clockwise for R.T., so have to put 'minus'
+        '''
+
+        Rf[:, s] = sum(rotation)
+        '''
+        Linear integral on specific theta
+        sum() is used to get the summation of each column on specific theta
+        '''
+
     return Rf
 
 
-img = mpimg.imread(r'F:\xxx.jpg')
-img = np.array(img)
-print(img.shape)
+img = mpimg.imread(r'F:\清华大学TBSI\2 Spring 2021\1 Courses\Advanced Signal Processing\ASP_HW\ASP_PA\sinogram.jpg')
+img_mat = np.array(img)
+print("img_mat.shape:", img_mat.shape)
 
-radon = discrete_RT(img, img.shape[0])
+radon_mat = discrete_radon_trans(img_mat, img_mat.shape[0])
 
 plt.subplot(1, 2, 1)
-plt.imshow(img, cmap='gray')
+plt.imshow(img_mat, cmap='gray')
+# plt.imshow(img_mat, cmap='gray')  # gray expression
 plt.subplot(1, 2, 2)
-plt.imshow(radon, cmap='gray')
+plt.imshow(radon_mat, cmap='gray')
 plt.show()
