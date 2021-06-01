@@ -1,0 +1,32 @@
+# Radon Transform
+# 2021-5-31
+# TBSI, THU
+# Hengxi Zhang
+
+from matplotlib import image as mpimg
+from matplotlib import pyplot as plt
+import numpy as np
+from scipy import ndimage  # For the rotation of the pic
+
+
+def discrete_RT(img_mat, steps):
+    M = img.shape[0]
+    N = img.shape[1]
+    Rf = np.zeros((M, N))
+    for s in range(steps):
+        rotation = ndimage.rotate(img_mat, -s * 180 / steps, reshape=False)  # Treat as the rotation of the image
+        Rf[:, s] = sum(rotation)  # linear integral on specific theta
+    return Rf
+
+
+img = mpimg.imread(r'F:\xxx.jpg')
+img = np.array(img)
+print(img.shape)
+
+radon = discrete_RT(img, img.shape[0])
+
+plt.subplot(1, 2, 1)
+plt.imshow(img, cmap='gray')
+plt.subplot(1, 2, 2)
+plt.imshow(radon, cmap='gray')
+plt.show()
