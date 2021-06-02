@@ -1,0 +1,27 @@
+# Kaczmarz algorithm
+# 2021-6-2
+# TBSI, THU
+# Hengxi Zhang
+
+import numpy as np
+
+
+def kaczmarz(y, A):
+    M = np.shape(y)[0]
+    x = np.zeros(M)
+    print(x)
+
+    K = 10  # Iterations
+
+    for k in range(K):
+        i = k % M
+        x = x + (y[i] - A[i].dot(x)) / np.linalg.norm(A[i]) * A[i]  # Kaczmarz algorithm
+    return x
+
+
+if __name__ == "__main__":
+    y = np.array([6, 15, 24])  # The length of row of the input picture
+    A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])  # The length of column of the input picture
+
+    x = kaczmarz(y, A)
+    print(x)
