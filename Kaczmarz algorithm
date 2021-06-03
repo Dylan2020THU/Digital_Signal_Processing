@@ -15,7 +15,7 @@ def kaczmarz(y, A):
 
     for k in range(K):
         i = k % M
-        x = x + (y[i] - A[i].dot(x)) / np.linalg.norm(A[i]) * A[i]  # Kaczmarz algorithm
+        x = x + (y[i] - A[i].dot(x)) / (np.linalg.norm(A[i]))**2 * A[i]  # Kaczmarz algorithm
     return x
 
 
