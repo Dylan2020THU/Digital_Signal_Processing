@@ -1,0 +1,116 @@
+# Inverse Radon Transform using Algebraic Reconstruction Technique (ART) and Filter Back Projection Algorithm (FBP), respectively, and compare
+# 2021-6-3
+# TBSI, THU
+# Hengxi Zhang
+
+import numpy as np
+from scipy import ndimage
+from scipy.signal import convolve
+from matplotlib import pyplot as plt
+from matplotlib import image as mpimg
+import time
+
+
+def myradon(img, theta):
+    N = img.shape[0]
+    Rf = np.zeros((N, N))
+    for s in range(theta):
+        rotation = ndimage.rotate(img, -s * 180 / theta, reshape=False).astype('float64')
+        '''     
+        The linear integral is treated as the rotation of the image;
+        'float64' is used for increasing the accuracy;
+        The default rotation is anticlockwise, and we need clockwise for R.T., so have to put 'minus'
+        '''
+
+        Rf[:, s] = sum(rotation)
+        '''
+        Linear integral on specific theta
+        sum() is used to get the summation of each column on specific theta
+        '''
+
+    return Rf
+
+
+def myiradon_art(image, steps):
+    N = len(image[0])
+    origin = np.zeros((steps, N, N))
+
+    for i in range(steps):
+        projectionValue = image[:, i]  # Each column of the original image corresponds to a projection value
+
+        projectionValueExpandDim = np.expand_dims(projectionValue, axis=0)  # Expand the dimension
+        projectionValueRepeat = projectionValueExpandDim.repeat(N, axis=0)  # Superposition
+        '''
+        Dimension expansion and superposition are used to imitate the back projection
+        '''
+
+        origin[i] = ndimage.rotate(projectionValueRepeat, i * 180 / steps, reshape=False).astype(np.float64)
+    iradon = np.sum(origin, axis=0)  # Superpose ALL layers together to form the original
+    return iradon
+
+
+# Two filters
+def RLFilter(N, d):
+    filterRL = np.zeros((N,))
+    for i in range(N):
+        filterRL[i] = - 1.0 / np.power((i - N / 2) * np.pi * d, 2.0)
+        if np.mod(i - N / 2, 2) == 0:
+            filterRL[i] = 0
+    filterRL[int(N / 2)] = 1 / (4 * np.power(d, 2.0))
+    return filterRL
+
+
+def SLFilter(N, d):
+    filterSL = np.zeros((N,))
+    for i in range(N):
+        filterSL[i] = - 2 / (np.pi ** 2.0 * d ** 2.0 * (4 * (i - N / 2) ** 2.0 - 1))
+    return filterSL
+
+
+def myiradon_fbp(image, steps):
+    N = len(image[0])
+    origin = np.zeros((steps, N, N))
+    # filter = RLFilter(N, 1)
+    filter = SLFilter(N, 1)
+    for i in range(steps):
+        projectionValue = image[:, i]
+        projectionValueFiltered = convolve(filter, projectionValue, "same")
+        projectionValueExpandDim = np.expand_dims(projectionValueFiltered, axis=0)
+        projectionValueRepeat = projectionValueExpandDim.repeat(N, axis=0)
+        origin[i] = ndimage.rotate(projectionValueRepeat, i * 180 / steps, reshape=False).astype(np.float64)
+    iradon = np.sum(origin, axis=0)
+    return iradon
+
+
+# Read the input image
+img = mpimg.imread(r'F:\清华大学TBSI\2 Spring 2021\1 Courses\Advanced Signal Processing\ASP_HW\ASP_PA\sinogram.jpg')
+img_mat = np.array(img)
+
+# Radon Transform
+radon_mat = myradon(img_mat, img_mat.shape[0])
+
+# Algebraic Reconstruction Technique
+tic_art = time.time()  # Start counting
+f_art = myiradon_art(radon_mat, len(img_mat[0]))  # ART
+toc_art = time.time()  # End counting
+time_art = toc_art - tic_art
+print('time_art:', time_art)
+
+# Filter Back Projection Algorithm
+tic_fbp = time.time()  # Start counting
+f_fbp = myiradon_fbp(radon_mat, len(img_mat[0]))  # FBP
+toc_fbp = time.time()  # End counting
+time_fbp = toc_fbp - tic_fbp
+print('time_fbp:', time_fbp)
+
+# Drawing
+fig1 = plt.figure()
+ax1 = fig1.add_subplot(221)
+ax1.imshow(img_mat, cmap='gray')
+ax2 = fig1.add_subplot(222)
+ax2.imshow(radon_mat, cmap='gray')
+ax3 = fig1.add_subplot(223)
+ax3.imshow(f_art, cmap='gray')
+ax4 = fig1.add_subplot(224)
+ax4.imshow(f_fbp, cmap='gray')
+plt.show()
