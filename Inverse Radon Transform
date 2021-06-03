@@ -68,6 +68,7 @@ def SLFilter(N, d):
 
 
 def myiradon_fbp(image, steps):
+    # 定义用于存储重建后的图像的数组
     N = len(image[0])
     origin = np.zeros((steps, N, N))
     # filter = RLFilter(N, 1)
@@ -82,35 +83,37 @@ def myiradon_fbp(image, steps):
     return iradon
 
 
-# Read the input image
-img = mpimg.imread(r'F:\清华大学TBSI\2 Spring 2021\1 Courses\Advanced Signal Processing\ASP_HW\ASP_PA\sinogram.jpg')
-img_mat = np.array(img)
+if __name__ == "__main__":
 
-# Radon Transform
-radon_mat = myradon(img_mat, img_mat.shape[0])
+    # Read the input image
+    img = mpimg.imread(r'F:\清华大学TBSI\2 Spring 2021\1 Courses\Advanced Signal Processing\ASP_HW\ASP_PA\sinogram.jpg')
+    img_mat = np.array(img)
 
-# Algebraic Reconstruction Technique
-tic_art = time.time()  # Start counting
-f_art = myiradon_art(radon_mat, len(img_mat[0]))  # ART
-toc_art = time.time()  # End counting
-time_art = toc_art - tic_art
-print('time_art:', time_art)
+    # Radon Transform
+    radon_mat = myradon(img_mat, img_mat.shape[0])
 
-# Filter Back Projection Algorithm
-tic_fbp = time.time()  # Start counting
-f_fbp = myiradon_fbp(radon_mat, len(img_mat[0]))  # FBP
-toc_fbp = time.time()  # End counting
-time_fbp = toc_fbp - tic_fbp
-print('time_fbp:', time_fbp)
+    # Algebraic Reconstruction Technique
+    tic_art = time.time()  # Start counting
+    f_art = myiradon_art(radon_mat, len(img_mat[0]))  # ART
+    toc_art = time.time()  # End counting
+    time_art = toc_art - tic_art
+    print('time_art:', time_art)
 
-# Drawing
-fig1 = plt.figure()
-ax1 = fig1.add_subplot(221)
-ax1.imshow(img_mat, cmap='gray')
-ax2 = fig1.add_subplot(222)
-ax2.imshow(radon_mat, cmap='gray')
-ax3 = fig1.add_subplot(223)
-ax3.imshow(f_art, cmap='gray')
-ax4 = fig1.add_subplot(224)
-ax4.imshow(f_fbp, cmap='gray')
-plt.show()
+    # Filter Back Projection Algorithm
+    tic_fbp = time.time()  # Start counting
+    f_fbp = myiradon_fbp(radon_mat, len(img_mat[0]))  # FBP
+    toc_fbp = time.time()  # End counting
+    time_fbp = toc_fbp - tic_fbp
+    print('time_fbp:', time_fbp)
+
+    # Drawing
+    fig1 = plt.figure()
+    ax1 = fig1.add_subplot(221)
+    ax1.imshow(img_mat, cmap='gray')
+    ax2 = fig1.add_subplot(222)
+    ax2.imshow(radon_mat, cmap='gray')
+    ax3 = fig1.add_subplot(223)
+    ax3.imshow(f_art, cmap='gray')
+    ax4 = fig1.add_subplot(224)
+    ax4.imshow(f_fbp, cmap='gray')
+    plt.show()
