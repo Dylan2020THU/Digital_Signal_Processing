@@ -17,10 +17,27 @@ def myhaar(x, L):
 
     return x_haar
 
+def myihaar(w, L):
+    operations = int(L / 2)
+    ave = w[:operations]  # Pick the front half part
+    diff = w[operations:]  # Pick the latter half part
+    x_ihaar = np.zeros(L)
+    for i in range(operations):
+        x_ihaar[2*i] = ave[i] - diff[i]
+        x_ihaar[2*i+1] = ave[i] + diff[i]
+    return x_ihaar
+
+
 
 if __name__ == '__main__':
     np.random.seed(2021)
     signal = np.random.randint(0, 10, size=1024)  # Input
+    print(signal)
     L = len(signal)
     w = myhaar(signal, L)
     print(w)
+    x = myihaar(w,L)
+    delta = x-signal  # Check the transformation, if each element equals to zero, then correct
+    print(delta)
+
+
