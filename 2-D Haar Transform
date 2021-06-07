@@ -1,0 +1,58 @@
+# Haar Transform and Inverse H.T.
+# 2021-6-6
+# TBSI, THU
+# Hengxi Zhang
+
+import numpy as np
+from matplotlib import image as mpimg
+from matplotlib import pyplot as plt
+
+def myhaar2(img, level_num):
+    '''
+    :param img:  The original input image
+    :param level_num: The transformation times
+    :return:
+    '''
+
+    M = np.shape(img)[0]
+    N = np.shape(img)[1]
+
+    img_HT_row = np.zeros((M, N))
+    img_HT = np.zeros((M, N))
+
+    for m in range(M):
+        img_HT_row[m, :] = myhaar(img[m, :], N, level_num)  # Haar Transform for each row at first
+    for n in range(N):
+        img_HT[:, n] = myhaar(img_HT_row[:, n], M, level_num)  # Haar Transform for each row secondly
+
+    # Calculate the average of the detail coefficients
+    M_section = int(M / (2 ** level_num))
+    N_section = int(N / (2 ** level_num))
+    img_HT_measurement = img_HT[:M_section,:N_section]
+    detail_coefficient_ave = (np.sum(np.abs(img_HT)) - np.sum(np.abs(img_HT_measurement)))\
+                             / (np.size(img_HT) - np.size(img_HT_measurement))  # Pick up all Haar measurements
+
+    return img_HT, detail_coefficient_ave
+    
+    
+    if __name__ == '__main__':
+    # np.random.seed(2021)
+    # 
+    # # 1-D signal Haar Transformation
+    # # signal = np.random.randint(0, 10, size=1024)  # Input signal
+    # signal = np.array([4, 6, 5, 5, 7, 5, 6, 6])
+    # L = len(signal)  # The length of the signal
+    # signal_HT = myhaar(signal, L,2)
+    # signal_recover = myihaar(signal_HT, L,2)
+    # delta = signal_recover - signal  # Check the transformation, if each element equals zero, then correct
+
+    # 2-D image Haar Transformation
+    image = mpimg.imread(r'F:\清华大学TBSI\2 Spring 2021\1 Courses\Advanced Signal Processing\ASP_HW\ASP_PA\sinogram.jpg')
+    # print(np.shape(image))
+    level_num = 1 # The number of the level in Haar Transform
+    image_HT, detail_coeff_ave = myhaar2(image, level_num)
+    print(detail_coeff_ave)
+    plt.subplot(1, 2, 1)
+    plt.imshow(image, cmap='gray')
+    plt.subplot(1, 2, 2)
+    plt.imshow(image_HT, cmap='gray')
