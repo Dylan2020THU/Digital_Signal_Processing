@@ -4,7 +4,7 @@
 # Hengxi Zhang
 
 import numpy as np
-from matplotlib import image as mpimg
+from PIL import Image
 from matplotlib import pyplot as plt
 
 def myhaar2(img, level_num):
@@ -35,22 +35,17 @@ def myhaar2(img, level_num):
     return img_HT, detail_coefficient_ave
     
     
-    if __name__ == '__main__':
-    # np.random.seed(2021)
-    # 
-    # # 1-D signal Haar Transformation
-    # # signal = np.random.randint(0, 10, size=1024)  # Input signal
-    # signal = np.array([4, 6, 5, 5, 7, 5, 6, 6])
-    # L = len(signal)  # The length of the signal
-    # signal_HT = myhaar(signal, L,2)
-    # signal_recover = myihaar(signal_HT, L,2)
-    # delta = signal_recover - signal  # Check the transformation, if each element equals zero, then correct
-
-    # 2-D image Haar Transformation
-    image = mpimg.imread(r'F:\清华大学TBSI\2 Spring 2021\1 Courses\Advanced Signal Processing\ASP_HW\ASP_PA\sinogram.jpg')
+if __name__ == '__main__':
+    # Image reading
+    image = Image.open(r'F:\清华大学TBSI\2 Spring 2021\1 Courses\Advanced Signal Processing\ASP_HW\ASP_PA\test_photo\test1.png')
+    # image = Image.open(r'F:\清华大学TBSI\2 Spring 2021\1 Courses\Advanced Signal Processing\ASP_HW\ASP_PA\test_photo\test1_no_person.png')
     # print(np.shape(image))
-    level_num = 1 # The number of the level in Haar Transform
-    image_HT, detail_coeff_ave = myhaar2(image, level_num)
+    image_gray = image.convert('L')  # Convert the colorful image into gray
+    image_gray_array = np.array(image_gray)
+
+    # ------------------ 2-D image Haar Transformation ------------------ #
+    level_num = 2  # The number of the level in Haar Transform
+    image_HT, detail_coeff_ave = myhaar2(image_gray_array, level_num)
     print(detail_coeff_ave)
     plt.subplot(1, 2, 1)
     plt.imshow(image, cmap='gray')
