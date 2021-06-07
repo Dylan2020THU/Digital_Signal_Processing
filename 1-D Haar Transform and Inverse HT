@@ -1,0 +1,73 @@
+# Haar Transform and Inverse H.T.
+# 2021-6-6
+# TBSI, THU
+# Hengxi Zhang
+
+import numpy as np
+
+
+def myhaar(x, L, level_num):
+    '''
+    :param x: The original input signal
+    :param L: The length of the input signal
+    :param level_num: The transformation times
+    :return: The result of the Haar Transformation
+    '''
+
+    mid = int(L / 2)
+    x_haar = np.zeros(L)  # Used to store the result of Haar Transformation
+
+    for num in range(level_num):
+        ave = np.zeros(mid)
+        diff = np.zeros(mid)
+        for i in range(mid):
+            ave[i] = (x[2 * i] + x[2 * i + 1]) / 2  # The front part of the Haar transformation
+            diff[i] = ave[i] - x[2 * i]  # The latter part
+
+        x_haar[:mid] = ave
+        x_haar[mid:(2 * mid)] = diff
+
+        x = x_haar[:mid]  # Take the front part as the object for next iteration
+        # print('mid:',mid)
+        mid = int(mid / 2)
+
+    return x_haar
+
+
+def myihaar(w, L, level_num):
+    '''
+    :param w: The original input signal
+    :param L: The length of the input signal
+    :param level_num: The transformation times
+    :return: The result of the inverse Haar Transformation
+    '''
+
+    # level_num = int(np.log2(L))   # The biggest transformation times
+    x_ihaar = np.zeros(L)
+    mid = 1
+    for num in range(level_num):
+        if mid <= int(L / 2):
+            ave = w[:mid]  # Pick the front half part
+            diff = w[mid:(2 * mid)]  # Pick the latter half part
+            for i in range(mid):
+                x_ihaar[2 * i] = ave[i] - diff[i]
+                x_ihaar[2 * i + 1] = ave[i] + diff[i]
+            w[:(2 * mid)] = x_ihaar[:(2 * mid)]
+            mid = mid * 2
+    # test = x_ihaar - w
+    # print('test', test)
+    return x_ihaar
+
+
+if __name__ == '__main__':
+    np.random.seed(2021)
+
+    # 1-D signal Haar Transformation
+    # signal = np.random.randint(0, 10, size=1024)  # Input signal
+    signal = np.array([4, 6, 5, 5, 7, 5, 6, 6])
+    L = len(signal)  # The length of the signal
+    signal_HT = myhaar(signal, L,2)
+    signal_recover = myihaar(signal_HT, L,2)
+    delta = signal_recover - signal  # Check the transformation, if each element equals zero, then correct
+
+
